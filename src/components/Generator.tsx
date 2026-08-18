@@ -61,82 +61,85 @@ export default function Generator({ template, onSaved, onCancel }: Props) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
+    <div className="space-y-5 page-transition">
+      {/* Top Header */}
+      <div className="flex items-start gap-3">
         <button
           onClick={onCancel}
-          className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50"
+          className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 shrink-0 shadow-sm transition-colors active:scale-95"
+          aria-label="Retour"
         >
           <ArrowLeft size={18} />
         </button>
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">{template.title}</h1>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug">{template.title}</h1>
           {template.ohada_reference && (
-            <p className="text-sm text-slate-500 mt-0.5">Référence : {template.ohada_reference}</p>
+            <p className="text-xs sm:text-sm text-slate-500 font-mono mt-0.5">Référence : {template.ohada_reference}</p>
           )}
         </div>
       </div>
 
       {/* Compliance banner */}
       {errorCount === 0 && warningCount === 0 ? (
-        <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg text-sm">
-          <CheckCircle2 size={16} />
-          Tous les champs obligatoires sont renseignés et aucune règle de conformité n'est violée.
+        <div className="flex items-center gap-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl text-xs sm:text-sm font-medium shadow-sm">
+          <CheckCircle2 size={18} className="text-emerald-600 shrink-0" />
+          <span>Tous les champs sont conformes aux exigences OHADA.</span>
         </div>
       ) : (
         <div className="space-y-2">
           {errorCount > 0 && (
-            <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-              <AlertCircle size={16} />
-              {errorCount} erreur{errorCount > 1 ? 's' : ''} de conformité OHADA à corriger.
+            <div className="flex items-center gap-2.5 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-xs sm:text-sm font-medium shadow-sm">
+              <AlertCircle size={18} className="text-red-600 shrink-0" />
+              <span>{errorCount} erreur{errorCount > 1 ? 's' : ''} de conformité OHADA à corriger.</span>
             </div>
           )}
           {warningCount > 0 && (
-            <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 px-4 py-3 rounded-lg text-sm">
-              <AlertTriangle size={16} />
-              {warningCount} avertissement{warningCount > 1 ? 's' : ''} à examiner.
+            <div className="flex items-center gap-2.5 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl text-xs sm:text-sm font-medium shadow-sm">
+              <AlertTriangle size={18} className="text-amber-600 shrink-0" />
+              <span>{warningCount} avertissement{warningCount > 1 ? 's' : ''} à examiner.</span>
             </div>
           )}
         </div>
       )}
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Form */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Form Card */}
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm">
           <div className="mb-5">
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+            <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-1.5">
               Titre du document
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 shadow-sm"
             />
           </div>
 
-          <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+          {/* Form fields: smooth scrolling without trapped containers on mobile */}
+          <div className="space-y-4 md:max-h-[60vh] md:overflow-y-auto pr-0.5">
             {template.variables.map((v) => {
               const fieldWarnings = warnings.filter((w) => w.field === v.key);
               const hasError = fieldWarnings.some((w) => w.severity === 'error');
               return (
-                <div key={v.key}>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                <div key={v.key} className="space-y-1.5">
+                  <label className="block text-xs sm:text-sm font-semibold text-slate-700">
                     {v.label}
-                    {v.required && <span className="text-red-500 ml-1">*</span>}
+                    {v.required && <span className="text-red-500 ml-1 font-bold">*</span>}
                     {v.sensitive && (
-                      <span className="ml-2 text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">
+                      <span className="ml-2 text-[10px] text-amber-700 bg-amber-100 font-semibold px-2 py-0.5 rounded-full">
                         sensible
                       </span>
                     )}
                   </label>
-                  {v.help && <p className="text-xs text-slate-400 mb-1.5">{v.help}</p>}
+                  {v.help && <p className="text-xs text-slate-400 leading-relaxed">{v.help}</p>}
                   {v.type === 'textarea' ? (
                     <textarea
                       value={String(values[v.key] ?? '')}
                       onChange={(e) => handleChange(v.key, e.target.value)}
                       rows={3}
-                      className={`w-full px-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all ${
                         hasError ? 'border-red-300 focus:border-red-500' : 'border-slate-200 focus:border-amber-500'
                       }`}
                     />
@@ -144,7 +147,7 @@ export default function Generator({ template, onSaved, onCancel }: Props) {
                     <select
                       value={String(values[v.key] ?? '')}
                       onChange={(e) => handleChange(v.key, e.target.value)}
-                      className={`w-full px-3 py-2 rounded-lg border text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all ${
                         hasError ? 'border-red-300' : 'border-slate-200'
                       }`}
                     >
@@ -162,7 +165,7 @@ export default function Generator({ template, onSaved, onCancel }: Props) {
                           v.type === 'number' ? Number(e.target.value) : e.target.value,
                         )
                       }
-                      className={`w-full px-3 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 transition-all ${
                         hasError ? 'border-red-300 focus:border-red-500' : 'border-slate-200 focus:border-amber-500'
                       }`}
                     />
@@ -170,12 +173,12 @@ export default function Generator({ template, onSaved, onCancel }: Props) {
                   {fieldWarnings.map((w) => (
                     <p
                       key={w.rule_id}
-                      className={`text-xs mt-1 flex items-center gap-1 ${
-                        w.severity === 'error' ? 'text-red-600' : 'text-amber-600'
+                      className={`text-xs flex items-center gap-1 font-medium ${
+                        w.severity === 'error' ? 'text-red-600' : 'text-amber-700'
                       }`}
                     >
-                      {w.severity === 'error' ? <AlertCircle size={11} /> : <AlertTriangle size={11} />}
-                      {w.description}
+                      {w.severity === 'error' ? <AlertCircle size={13} className="shrink-0" /> : <AlertTriangle size={13} className="shrink-0" />}
+                      <span>{w.description}</span>
                     </p>
                   ))}
                 </div>
@@ -183,39 +186,40 @@ export default function Generator({ template, onSaved, onCancel }: Props) {
             })}
           </div>
 
+          {/* Action buttons */}
           <div className="flex gap-3 mt-6 pt-4 border-t border-slate-100">
             <button
               onClick={() => setShowPreview((s) => !s)}
-              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 text-sm font-medium"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-xs sm:text-sm font-semibold transition-colors shadow-sm active:scale-95"
             >
               <Eye size={16} />
-              {showPreview ? "Masquer l'aperçu" : 'Aperçu'}
+              <span>{showPreview ? "Masquer l'aperçu" : 'Aperçu'}</span>
             </button>
             <button
               onClick={handleSave}
               disabled={saving || errorCount > 0}
-              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 disabled:bg-slate-200 disabled:text-slate-400 text-slate-900 font-semibold text-sm transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:bg-slate-200 disabled:text-slate-400 text-slate-900 font-bold text-xs sm:text-sm transition-all shadow-md active:scale-95"
             >
               <Save size={16} />
-              {saving ? 'Enregistrement...' : 'Enregistrer'}
+              <span>{saving ? 'Enregistrement...' : 'Enregistrer'}</span>
             </button>
           </div>
           {errorCount > 0 && (
-            <p className="text-xs text-red-500 mt-2 text-center">
-              Corrigez les erreurs de conformité pour enregistrer.
+            <p className="text-xs text-red-500 mt-2 text-center font-medium">
+              Veuillez corriger les erreurs de conformité pour pouvoir enregistrer.
             </p>
           )}
-          {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
+          {error && <p className="text-sm text-red-600 mt-2 text-center">{error}</p>}
         </div>
 
-        {/* Preview */}
+        {/* Preview Card */}
         {showPreview && (
-          <div className="bg-white rounded-xl border border-slate-200 p-6 lg:sticky lg:top-6 lg:self-start lg:max-h-[80vh] lg:overflow-y-auto">
-            <div className="flex items-center gap-2 text-sm font-medium text-slate-500 mb-4">
-              <FileText size={16} />
-              Aperçu du document
+          <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 lg:sticky lg:top-6 lg:self-start lg:max-h-[80vh] lg:overflow-y-auto shadow-sm">
+            <div className="flex items-center gap-2 text-sm font-semibold text-slate-600 mb-4 pb-2 border-b border-slate-100">
+              <FileText size={18} className="text-amber-500" />
+              <span>Aperçu en direct du document</span>
             </div>
-            <div className="prose prose-sm max-w-none whitespace-pre-wrap font-serif text-slate-800 leading-relaxed">
+            <div className="prose prose-sm max-w-none whitespace-pre-wrap font-serif text-slate-800 leading-relaxed text-sm sm:text-base selection:bg-amber-100">
               {renderedBody}
             </div>
           </div>

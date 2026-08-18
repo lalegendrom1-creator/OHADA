@@ -113,86 +113,98 @@ export default function DocumentViewer({ document, templates, onBack, onRefresh,
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-start gap-4 flex-wrap">
+    <div className="space-y-5 page-transition">
+      {/* Header */}
+      <div className="flex items-start gap-3">
         <button
           onClick={onBack}
-          className="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50"
+          className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 shrink-0 shadow-sm transition-colors active:scale-95"
+          aria-label="Retour"
         >
           <ArrowLeft size={18} />
         </button>
         <div className="flex-1 min-w-0">
-          <h1 className="text-2xl font-bold text-slate-900 truncate">{doc.title}</h1>
-          <div className="flex items-center gap-3 mt-1 text-sm text-slate-500">
-            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_BADGE[doc.status]}`}>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 leading-snug break-words">{doc.title}</h1>
+          <div className="flex items-center gap-2 mt-1.5 text-xs text-slate-500 flex-wrap">
+            <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${STATUS_BADGE[doc.status]}`}>
               {STATUS_LABEL[doc.status]}
             </span>
-            {template?.ohada_reference && <span>{template.ohada_reference}</span>}
-            <span>Modifié le {new Date(doc.updated_at).toLocaleDateString('fr-FR')}</span>
+            {template?.ohada_reference && <span className="font-mono text-slate-400">{template.ohada_reference}</span>}
+            <span>· Modifié le {new Date(doc.updated_at).toLocaleDateString('fr-FR')}</span>
           </div>
         </div>
       </div>
 
-      {/* Toolbar */}
-      <div className="flex flex-wrap gap-2">
+      {/* Responsive Toolbar */}
+      <div className="bg-white p-2.5 sm:p-3 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center gap-2">
+        <button
+          onClick={() => setEditing((e) => !e)}
+          className={`inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm ${
+            editing
+              ? 'bg-slate-900 text-white'
+              : 'bg-amber-500 hover:bg-amber-600 text-slate-900'
+          }`}
+        >
+          {editing ? <X size={15} /> : <Pencil size={15} />}
+          <span>{editing ? 'Annuler la modif' : 'Modifier'}</span>
+        </button>
+
         <button
           onClick={() => exportPdf(renderedBody, doc.title)}
-          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-medium text-slate-700 transition-colors"
         >
-          <Download size={16} />
-          PDF
+          <Download size={15} />
+          <span>PDF</span>
         </button>
         <button
           onClick={() => exportWord(renderedBody, doc.title)}
-          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-medium text-slate-700 transition-colors"
         >
-          <FileType size={16} />
-          Word
+          <FileType size={15} />
+          <span>Word</span>
         </button>
         <button
           onClick={handleCopy}
-          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-medium text-slate-700 transition-colors"
         >
-          {copied ? <CheckCircle2 size={16} className="text-emerald-500" /> : <Copy size={16} />}
-          {copied ? 'Copié' : 'Copier'}
+          {copied ? <CheckCircle2 size={15} className="text-emerald-600" /> : <Copy size={15} />}
+          <span>{copied ? 'Copié !' : 'Copier'}</span>
         </button>
         <button
           onClick={() => onDuplicate(doc)}
-          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-medium text-slate-700 transition-colors"
         >
-          <Copy size={16} />
-          Dupliquer
-        </button>
-        <button
-          onClick={() => setEditing((e) => !e)}
-          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50"
-        >
-          {editing ? <X size={16} /> : <Pencil size={16} />}
-          {editing ? 'Annuler' : 'Modifier'}
+          <Copy size={15} />
+          <span>Dupliquer</span>
         </button>
         <button
           onClick={() => setShowVersions((s) => !s)}
-          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-xs sm:text-sm font-medium transition-colors ${
+            showVersions
+              ? 'bg-slate-800 text-white border-slate-800'
+              : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700'
+          }`}
         >
-          <History size={16} />
-          Versions ({versions.length})
+          <History size={15} />
+          <span>Versions ({versions.length})</span>
         </button>
+
         {doc.status === 'draft' && (
           <button
             onClick={() => handleStatus('validated')}
             disabled={errorCount > 0}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 disabled:bg-slate-200 disabled:text-slate-400"
+            className="ml-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-200 disabled:text-slate-400 text-white text-xs sm:text-sm font-semibold transition-all shadow-sm"
           >
-            <CheckCircle2 size={16} />
-            Valider
+            <CheckCircle2 size={15} />
+            <span>Valider le document</span>
           </button>
         )}
         {doc.status === 'validated' && (
           <button
             onClick={() => handleStatus('archived')}
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-200 text-slate-700 text-sm font-medium hover:bg-slate-300"
+            className="ml-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs sm:text-sm font-medium transition-colors"
           >
-            Archiver
+            <span>Archiver</span>
           </button>
         )}
       </div>
@@ -201,46 +213,50 @@ export default function DocumentViewer({ document, templates, onBack, onRefresh,
       {doc.warnings.length > 0 && !editing && (
         <div className="space-y-2">
           {doc.warnings.filter((w) => w.severity === 'error').map((w) => (
-            <div key={w.rule_id} className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-2.5 rounded-lg text-sm">
-              <AlertCircle size={15} />
-              {w.description}
+            <div key={w.rule_id} className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium">
+              <AlertCircle size={16} className="shrink-0" />
+              <span>{w.description}</span>
             </div>
           ))}
           {doc.warnings.filter((w) => w.severity === 'warning').map((w) => (
-            <div key={w.rule_id} className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 px-4 py-2.5 rounded-lg text-sm">
-              <AlertTriangle size={15} />
-              {w.description}
+            <div key={w.rule_id} className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-2.5 rounded-xl text-xs sm:text-sm">
+              <AlertTriangle size={16} className="shrink-0 text-amber-600" />
+              <span>{w.description}</span>
             </div>
           ))}
         </div>
       )}
 
-      {error && <div className="text-sm text-red-600">{error}</div>}
+      {error && (
+        <div className="text-xs sm:text-sm text-red-600 bg-red-50 border border-red-200 px-4 py-2.5 rounded-xl">
+          {error}
+        </div>
+      )}
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Document body */}
-        <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-8">
-          <div className="prose prose-sm max-w-none whitespace-pre-wrap font-serif text-slate-800 leading-relaxed text-[13px]">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Document body - placed after editor on mobile if editing is active */}
+        <div className={`bg-white rounded-2xl border border-slate-200 p-5 sm:p-8 shadow-sm ${editing ? 'order-2 lg:order-1 lg:col-span-2' : 'lg:col-span-2'}`}>
+          <div className="prose prose-sm max-w-none whitespace-pre-wrap font-serif text-slate-800 leading-relaxed text-sm sm:text-base selection:bg-amber-100">
             {renderedBody}
           </div>
         </div>
 
-        {/* Side panel */}
-        <div className="space-y-4">
+        {/* Side panel - placed first on mobile if editing so user sees fields immediately */}
+        <div className={`space-y-4 ${editing ? 'order-1 lg:order-2 lg:col-span-1' : 'lg:col-span-1'}`}>
           {editing && template && (
-            <div className="bg-white rounded-xl border border-slate-200 p-5">
-              <h3 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                <PencilLine size={16} />
+            <div className="bg-white rounded-2xl border-2 border-amber-400 p-5 shadow-md">
+              <h3 className="font-bold text-slate-900 mb-3 text-base flex items-center gap-2">
+                <PencilLine size={18} className="text-amber-500" />
                 Modifier les champs
               </h3>
-              <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+              <div className="space-y-3.5 md:max-h-[55vh] md:overflow-y-auto pr-0.5">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Titre</label>
+                  <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-1">Titre du document</label>
                   <input
                     type="text"
                     value={editTitle}
                     onChange={(e) => setEditTitle(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
                   />
                 </div>
                 {template.variables.map((v) => (

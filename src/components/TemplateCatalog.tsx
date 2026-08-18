@@ -106,122 +106,154 @@ export default function TemplateCatalog({ templates, onSelect }: Props) {
 
       {/* Search + filters */}
       <div className="space-y-3">
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col sm:flex-row gap-2.5">
           <div className="relative flex-1">
-            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Rechercher un modèle..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500"
+              placeholder="Rechercher un modèle d'acte ou de lettre..."
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 shadow-sm"
             />
           </div>
-          <button
-            onClick={() => setFavoritesOnly((f) => !f)}
-            className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-              favoritesOnly
-                ? 'bg-amber-500 text-slate-900'
-                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-            }`}
-          >
-            <Star size={16} className={favoritesOnly ? 'fill-slate-900' : ''} />
-            Favoris
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setFavoritesOnly((f) => !f)}
+              className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all shadow-sm flex-1 sm:flex-initial whitespace-nowrap ${
+                favoritesOnly
+                  ? 'bg-amber-500 text-slate-900 font-semibold'
+                  : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              <Star size={16} className={favoritesOnly ? 'fill-slate-900' : 'text-amber-500'} />
+              <span>Favoris ({favorites.length})</span>
+            </button>
+
+            <div className="relative flex-1 sm:flex-initial min-w-[140px]">
+              <Globe size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <select
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                className="w-full pl-9 pr-7 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500/40 appearance-none cursor-pointer shadow-sm truncate"
+              >
+                {OHADA_COUNTRIES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex gap-2 overflow-x-auto pb-1 flex-1">
-            {CATEGORIES.map((c) => (
-              <button
-                key={c}
-                onClick={() => setCategory(c)}
-                className={`px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
-                  category === c
-                    ? 'bg-slate-900 text-white'
-                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-                }`}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
-          <div className="relative">
-            <Globe size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-            <select
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              className="pl-9 pr-8 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/40 appearance-none cursor-pointer"
+        {/* Category Pills horizontal scroll */}
+        <div className="flex gap-2 overflow-x-auto pb-1.5 pt-0.5 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+          {CATEGORIES.map((c) => (
+            <button
+              key={c}
+              onClick={() => setCategory(c)}
+              className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all shrink-0 shadow-sm ${
+                category === c
+                  ? 'bg-slate-900 text-white font-semibold'
+                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-slate-900'
+              }`}
             >
-              {OHADA_COUNTRIES.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-          </div>
+              {c}
+            </button>
+          ))}
         </div>
       </div>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-16 text-slate-400">
-          <FileText size={32} className="mx-auto mb-3 opacity-40" />
-          <p>
+        <div className="text-center py-16 bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
+          <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center mx-auto mb-3">
+            <FileText size={28} />
+          </div>
+          <h3 className="font-semibold text-slate-800 text-base mb-1">Aucun modèle trouvé</h3>
+          <p className="text-sm text-slate-500 max-w-md mx-auto">
             {favoritesOnly
-              ? 'Aucun modèle favori. Cliquez sur l\'étoile d\'un modèle pour l\'ajouter.'
-              : 'Aucun modèle ne correspond à votre recherche.'}
+              ? "Vous n'avez pas encore ajouté de modèle aux favoris. Cliquez sur l'étoile d'un modèle pour l'ajouter."
+              : 'Aucun modèle ne correspond à vos critères de recherche.'}
           </p>
+          {(query || category !== 'Tous' || country !== 'Tous les pays' || favoritesOnly) && (
+            <button
+              onClick={() => {
+                setQuery('');
+                setCategory('Tous');
+                setCountry('Tous les pays');
+                setFavoritesOnly(false);
+              }}
+              className="mt-4 text-xs font-semibold text-amber-600 hover:text-amber-700 bg-amber-50 px-3 py-1.5 rounded-lg transition-colors inline-block"
+            >
+              Réinitialiser les filtres
+            </button>
+          )}
         </div>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((t) => {
             const isFav = favoriteIds.has(t.id);
             return (
               <div
                 key={t.id}
-                className="group relative bg-white rounded-xl border border-slate-200 p-5 hover:border-amber-300 hover:shadow-md transition-all"
+                className="group relative bg-white rounded-2xl border border-slate-200/90 p-5 hover:border-amber-400 hover:shadow-md transition-all flex flex-col justify-between"
               >
+                {/* Favorite Star Button - always accessible */}
                 <button
-                  onClick={() => handleToggleFavorite(t.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleToggleFavorite(t.id);
+                  }}
                   disabled={favLoading[t.id]}
-                  className="absolute top-3 right-3 text-slate-300 hover:text-amber-500 transition-colors p-1"
+                  className="absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-slate-50 hover:bg-amber-50 border border-slate-100 hover:border-amber-200 flex items-center justify-center text-slate-400 hover:text-amber-500 transition-all z-10"
                   title={isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+                  aria-label={isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}
                 >
                   <Star
-                    size={18}
-                    className={isFav ? 'fill-amber-500 text-amber-500' : ''}
+                    size={16}
+                    className={isFav ? 'fill-amber-500 text-amber-500' : 'text-slate-400'}
                   />
                 </button>
-                <button
+
+                <div
                   onClick={() => onSelect(t)}
-                  className="text-left w-full pr-8"
+                  className="cursor-pointer"
                 >
-                  <div className="flex items-start gap-2 mb-3">
+                  <div className="flex items-start gap-1.5 mb-2.5 pr-8 flex-wrap">
                     <span
-                      className={`text-xs font-medium px-2.5 py-1 rounded-full border ${
+                      className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${
                         CATEGORY_COLORS[t.category] || 'bg-slate-100 text-slate-600 border-slate-200'
                       }`}
                     >
                       {t.category}
                     </span>
                     {t.country && (
-                      <span className="text-xs font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-500">
+                      <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
                         {t.country}
                       </span>
                     )}
                   </div>
-                  <h3 className="font-semibold text-slate-900 mb-1.5 leading-snug">{t.title}</h3>
-                  <p className="text-sm text-slate-500 line-clamp-2 mb-3">
-                    {t.description || 'Modèle de document juridique.'}
+
+                  <h3 className="font-bold text-slate-900 mb-1.5 text-base leading-snug group-hover:text-amber-600 transition-colors">
+                    {t.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-500 line-clamp-2 mb-3 leading-relaxed">
+                    {t.description || 'Modèle de document juridique conforme OHADA.'}
                   </p>
                   {t.ohada_reference && (
-                    <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                      <Scale size={12} />
-                      {t.ohada_reference}
+                    <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono mb-4">
+                      <Scale size={13} className="text-amber-500 shrink-0" />
+                      <span className="truncate">{t.ohada_reference}</span>
                     </div>
                   )}
-                  <div className="mt-3 flex items-center gap-1 text-sm text-amber-600 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                    Générer
-                    <ArrowRight size={14} />
-                  </div>
+                </div>
+
+                {/* Primary Action Button - ALWAYS clearly visible on mobile & desktop */}
+                <button
+                  onClick={() => onSelect(t)}
+                  className="w-full mt-2 pt-3 border-t border-slate-100 flex items-center justify-between text-xs sm:text-sm font-semibold text-amber-700 bg-amber-50/70 hover:bg-amber-500 hover:text-slate-900 px-3.5 py-2.5 rounded-xl transition-all group-hover:bg-amber-500 group-hover:text-slate-900 shadow-sm"
+                >
+                  <span>Générer ce document</span>
+                  <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             );

@@ -24,16 +24,16 @@ type View =
   | { name: 'admin' }
   | { name: 'history' };
 
-const USER_NAV_ITEMS: { id: string; label: string; icon: typeof Scale; view: View }[] = [
-  { id: 'dashboard', label: 'Tableau de bord', icon: LayoutDashboard, view: { name: 'dashboard' } },
-  { id: 'catalog', label: 'Modèles', icon: FileText, view: { name: 'catalog' } },
-  { id: 'documents', label: 'Mes documents', icon: FileText, view: { name: 'documents' } },
+const USER_NAV_ITEMS: { id: string; label: string; shortLabel: string; icon: typeof Scale; view: View }[] = [
+  { id: 'dashboard', label: 'Tableau de bord', shortLabel: 'Accueil', icon: LayoutDashboard, view: { name: 'dashboard' } },
+  { id: 'catalog', label: 'Modèles OHADA', shortLabel: 'Modèles', icon: FileText, view: { name: 'catalog' } },
+  { id: 'documents', label: 'Mes documents', shortLabel: 'Documents', icon: FileText, view: { name: 'documents' } },
 ];
 
-const ADMIN_NAV_ITEMS: { id: string; label: string; icon: typeof Scale; view: View }[] = [
-  { id: 'admin', label: 'Gestion des modèles', icon: ShieldCheck, view: { name: 'admin' } },
-  { id: 'catalog', label: 'Catalogue public', icon: FileText, view: { name: 'catalog' } },
-  { id: 'history', label: "Journal d'audit", icon: History, view: { name: 'history' } },
+const ADMIN_NAV_ITEMS: { id: string; label: string; shortLabel: string; icon: typeof Scale; view: View }[] = [
+  { id: 'admin', label: 'Gestion des modèles', shortLabel: 'Modèles', icon: ShieldCheck, view: { name: 'admin' } },
+  { id: 'catalog', label: 'Catalogue public', shortLabel: 'Catalogue', icon: FileText, view: { name: 'catalog' } },
+  { id: 'history', label: "Journal d'audit", shortLabel: 'Audit', icon: History, view: { name: 'history' } },
 ];
 
 export default function App() {
@@ -176,11 +176,11 @@ export default function App() {
   const userDisplayLabel = inAdminMode ? 'Administrateur' : (user?.email ?? 'Utilisateur');
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 flex">
+    <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col md:flex-row">
       {/* Sidebar Desktop */}
-      <aside className="hidden md:flex w-64 flex-col bg-slate-900 text-slate-200 fixed inset-y-0 left-0 border-r border-slate-800">
+      <aside className="hidden md:flex w-64 flex-col bg-slate-900 text-slate-200 fixed inset-y-0 left-0 border-r border-slate-800 z-20">
         <div className="px-6 py-6 flex items-center gap-3 border-b border-slate-700/60">
-          <div className="w-10 h-10 rounded-lg bg-amber-500 flex items-center justify-center text-slate-900 shrink-0">
+          <div className="w-10 h-10 rounded-lg bg-amber-500 flex items-center justify-center text-slate-900 shrink-0 shadow-md">
             {inAdminMode ? <ShieldCheck size={22} strokeWidth={2.2} /> : <Scale size={22} strokeWidth={2.2} />}
           </div>
           <div>
@@ -208,7 +208,7 @@ export default function App() {
                 onClick={() => go(item.view)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   active
-                    ? 'bg-amber-500 text-slate-900 font-semibold'
+                    ? 'bg-amber-500 text-slate-900 font-semibold shadow-sm'
                     : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                 }`}
               >
@@ -230,7 +230,7 @@ export default function App() {
                 </div>
                 <button
                   onClick={handleAdminLogout}
-                  className="text-slate-400 hover:text-red-400 p-1 rounded transition-colors"
+                  className="text-slate-400 hover:text-red-400 p-1.5 rounded transition-colors"
                   title="Fermer la session administrateur"
                 >
                   <LogOut size={16} />
@@ -255,11 +255,11 @@ export default function App() {
                 {userInitial}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-xs text-slate-300 truncate">{userDisplayLabel}</div>
+                <div className="text-xs text-slate-300 truncate font-medium">{userDisplayLabel}</div>
               </div>
               <button
                 onClick={signOut}
-                className="text-slate-400 hover:text-red-400 p-1 rounded transition-colors"
+                className="text-slate-400 hover:text-red-400 p-1.5 rounded transition-colors"
                 title="Déconnexion"
               >
                 <LogOut size={16} />
@@ -275,8 +275,52 @@ export default function App() {
         </div>
       </aside>
 
-      {/* Mobile Bottom Nav */}
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-20 bg-slate-900 border-t border-slate-700/60 px-2 py-1.5 flex items-center justify-around">
+      {/* Mobile Top Bar */}
+      <header className="md:hidden fixed top-0 inset-x-0 z-30 bg-slate-900/95 backdrop-blur-md text-white px-4 py-3 border-b border-slate-800 flex items-center justify-between pt-safe">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center text-slate-900 shrink-0 font-bold">
+            {inAdminMode ? <ShieldCheck size={18} /> : <Scale size={18} />}
+          </div>
+          <div>
+            <div className="font-bold text-sm leading-tight flex items-center gap-1.5">
+              OHADA Doc
+              {inAdminMode && (
+                <span className="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1 py-0.2 rounded font-mono uppercase">
+                  Admin
+                </span>
+              )}
+            </div>
+            <div className="text-[10px] text-slate-400 leading-tight">
+              {inAdminMode ? 'Espace Administration' : 'Documents juridiques'}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {inAdminMode ? (
+            <button
+              onClick={handleAdminLogout}
+              className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-red-400 bg-slate-800 px-2.5 py-1.5 rounded-lg border border-slate-700 transition-colors"
+              title="Fermer la session"
+            >
+              <LogOut size={14} />
+              <span>Quitter</span>
+            </button>
+          ) : (
+            <button
+              onClick={signOut}
+              className="flex items-center gap-1.5 text-xs text-slate-300 hover:text-red-400 bg-slate-800 px-2.5 py-1.5 rounded-lg border border-slate-700 transition-colors"
+              title="Déconnexion"
+            >
+              <LogOut size={14} />
+              <span>Déconnexion</span>
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-2 py-1.5 pb-safe flex items-center justify-around shadow-2xl">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = activeNav === item.id;
@@ -284,45 +328,24 @@ export default function App() {
             <button
               key={item.id}
               onClick={() => go(item.view)}
-              className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg transition-colors ${
-                active ? 'text-amber-400' : 'text-slate-400'
+              className={`flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-xl transition-all ${
+                active
+                  ? 'text-amber-400 font-semibold bg-amber-500/10'
+                  : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              <Icon size={20} />
-              <span className="text-[10px] font-medium leading-none">{item.label.split(' ')[0]}</span>
+              <Icon size={20} className={active ? 'stroke-[2.5]' : 'stroke-[1.8]'} />
+              <span className="text-[11px] mt-0.5 font-medium leading-none tracking-tight">
+                {item.shortLabel}
+              </span>
             </button>
           );
         })}
-      </div>
-
-      {/* Mobile Top Bar */}
-      <div className="md:hidden fixed top-0 inset-x-0 z-20 bg-slate-900 text-white px-4 py-3 flex items-center gap-2">
-        <div className="w-8 h-8 rounded bg-amber-500 flex items-center justify-center text-slate-900 shrink-0">
-          {inAdminMode ? <ShieldCheck size={16} /> : <Scale size={16} />}
-        </div>
-        <span className="font-bold text-sm whitespace-nowrap">
-          OHADA Doc {inAdminMode && <span className="text-amber-400 text-xs font-normal">(Admin)</span>}
-        </span>
-        <div className="ml-auto flex items-center gap-2">
-          {inAdminMode ? (
-            <button
-              onClick={handleAdminLogout}
-              className="text-slate-300 hover:text-red-400 p-1"
-              title="Fermer la session"
-            >
-              <LogOut size={16} />
-            </button>
-          ) : (
-            <button onClick={signOut} className="text-slate-300 hover:text-red-400 p-1" title="Déconnexion">
-              <LogOut size={16} />
-            </button>
-          )}
-        </div>
-      </div>
+      </nav>
 
       {/* Main Content */}
-      <main className="flex-1 md:ml-64 pt-16 md:pt-0 pb-16 md:pb-0 min-h-screen">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 md:ml-64 pt-16 md:pt-0 pb-28 md:pb-8 min-h-screen w-full">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {loading && (
             <div className="flex items-center justify-center py-24 text-slate-500">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
@@ -390,14 +413,14 @@ export default function App() {
         </div>
       </main>
 
-      {/* Floating CTA for user dashboard */}
+      {/* Floating Action Button (FAB) for user dashboard - Positioned safely above bottom nav on mobile */}
       {view.name === 'dashboard' && !inAdminMode && !loading && (
         <button
           onClick={() => go({ name: 'catalog' })}
-          className="fixed bottom-6 right-6 bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold rounded-full px-5 py-3 shadow-lg flex items-center gap-2 transition-colors z-10"
+          className="fixed bottom-20 right-4 md:bottom-6 md:right-6 bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-900 font-semibold rounded-full px-4 py-3 sm:px-5 sm:py-3 shadow-xl flex items-center gap-2 transition-all z-20 hover:shadow-amber-500/25 border border-amber-400/50"
         >
-          <Plus size={18} />
-          Nouveau document
+          <Plus size={20} className="shrink-0" />
+          <span className="text-sm font-bold">Nouveau document</span>
         </button>
       )}
     </div>

@@ -337,25 +337,25 @@ function TemplateEditor({
 
   return (
     <div className="bg-white rounded-xl border-2 border-amber-400/80 p-6 space-y-5 shadow-lg animate-scale-in">
-      <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-        <h3 className="font-bold text-slate-900 text-lg flex items-center gap-2">
-          <Scale size={20} className="text-amber-500" />
-          {template.id ? `Modifier : ${template.title}` : 'Créer un nouveau modèle'}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+        <h3 className="font-bold text-slate-900 text-base sm:text-lg flex items-center gap-2">
+          <Scale size={20} className="text-amber-500 shrink-0" />
+          <span>{template.id ? `Modifier : ${template.title}` : 'Créer un nouveau modèle'}</span>
         </h3>
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto">
           <button
             onClick={onCancel}
-            className="px-3 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 text-sm font-medium transition-colors"
+            className="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl text-slate-600 hover:bg-slate-100 text-xs sm:text-sm font-medium transition-colors border border-slate-200 text-center"
           >
             Annuler
           </button>
           <button
             onClick={onSave}
             disabled={saving}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold text-sm disabled:bg-slate-200 transition-all shadow-sm"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold text-xs sm:text-sm disabled:bg-slate-200 transition-all shadow-sm text-center"
           >
             <Save size={16} />
-            {saving ? 'Enregistrement...' : 'Enregistrer le modèle'}
+            <span>{saving ? 'Enregistrement...' : 'Enregistrer'}</span>
           </button>
         </div>
       </div>
@@ -448,7 +448,7 @@ function TemplateEditor({
 
       {/* Variables */}
       <div className="border-t border-slate-100 pt-4">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <div>
             <h4 className="font-semibold text-slate-800 text-sm">Variables dynamiques du formulaire</h4>
             <p className="text-xs text-slate-400">Ces variables apparaîtront sous forme de champs lors de la génération.</p>
@@ -456,32 +456,32 @@ function TemplateEditor({
           <button
             type="button"
             onClick={addVariable}
-            className="text-xs bg-amber-50 text-amber-700 hover:bg-amber-100 px-3 py-1.5 rounded-md font-semibold flex items-center gap-1 transition-colors border border-amber-200"
+            className="text-xs bg-amber-50 text-amber-800 hover:bg-amber-100 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-colors border border-amber-200 shadow-sm"
           >
             <Plus size={14} /> Ajouter une variable
           </button>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {(template.variables || []).map((v, idx) => (
-            <div key={idx} className="grid grid-cols-12 gap-2 items-center bg-slate-50 p-2.5 rounded-lg border border-slate-200/70">
+            <div key={idx} className="bg-slate-50 p-3 rounded-xl border border-slate-200/80 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               <input
                 type="text"
                 value={v.key}
                 onChange={(e) => updateVariable(idx, { key: e.target.value })}
                 placeholder="clé (ex: nom_client)"
-                className={`col-span-3 font-mono ${inputSmClass}`}
+                className={`sm:w-36 font-mono ${inputSmClass}`}
               />
               <input
                 type="text"
                 value={v.label}
                 onChange={(e) => updateVariable(idx, { label: e.target.value })}
                 placeholder="Libellé du champ"
-                className={`col-span-4 ${inputSmClass}`}
+                className={`flex-1 ${inputSmClass}`}
               />
               <select
                 value={v.type}
                 onChange={(e) => updateVariable(idx, { type: e.target.value as TemplateVariable['type'] })}
-                className={`col-span-2 ${inputSmClass}`}
+                className={`sm:w-32 bg-white ${inputSmClass}`}
               >
                 <option value="text">Texte court</option>
                 <option value="textarea">Texte long</option>
@@ -489,22 +489,25 @@ function TemplateEditor({
                 <option value="date">Date</option>
                 <option value="select">Menu déroulant</option>
               </select>
-              <label className="col-span-2 flex items-center gap-1.5 text-xs text-slate-600 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={v.required || false}
-                  onChange={(e) => updateVariable(idx, { required: e.target.checked })}
-                  className="rounded text-amber-500"
-                />
-                Requis
-              </label>
-              <button
-                type="button"
-                onClick={() => removeVariable(idx)}
-                className="col-span-1 text-slate-400 hover:text-red-500 transition-colors text-right"
-              >
-                <X size={16} />
-              </button>
+              <div className="flex items-center justify-between sm:justify-start gap-3 pt-1 sm:pt-0">
+                <label className="flex items-center gap-1.5 text-xs font-medium text-slate-700 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={v.required || false}
+                    onChange={(e) => updateVariable(idx, { required: e.target.checked })}
+                    className="rounded text-amber-500"
+                  />
+                  Requis
+                </label>
+                <button
+                  type="button"
+                  onClick={() => removeVariable(idx)}
+                  className="p-1 text-slate-400 hover:text-red-500 transition-colors"
+                  title="Supprimer la variable"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -512,7 +515,7 @@ function TemplateEditor({
 
       {/* Compliance rules */}
       <div className="border-t border-slate-100 pt-4">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
           <div>
             <h4 className="font-semibold text-slate-800 text-sm">Règles de conformité juridique (Optionnel)</h4>
             <p className="text-xs text-slate-400">Expressions JavaScript pour vérifier la conformité OHADA (ex: montant &gt; 0).</p>
@@ -520,34 +523,34 @@ function TemplateEditor({
           <button
             type="button"
             onClick={addRule}
-            className="text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-1.5 rounded-md font-semibold flex items-center gap-1 transition-colors"
+            className="text-xs bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
           >
             <Plus size={14} /> Ajouter une règle
           </button>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {(template.compliance_rules || []).map((r, idx) => (
-            <div key={idx} className="grid grid-cols-12 gap-2 items-start bg-slate-50 p-2.5 rounded-lg border border-slate-200/70">
+            <div key={idx} className="bg-slate-50 p-3 rounded-xl border border-slate-200/80 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               <input
                 type="text"
                 value={r.id}
                 onChange={(e) => updateRule(idx, { id: e.target.value })}
                 placeholder="ID règle"
-                className={`col-span-2 font-mono ${inputSmClass}`}
+                className={`sm:w-28 font-mono ${inputSmClass}`}
               />
               <input
                 type="text"
                 value={r.description}
                 onChange={(e) => updateRule(idx, { description: e.target.value })}
                 placeholder="Message d'avertissement"
-                className={`col-span-5 ${inputSmClass}`}
+                className={`flex-1 ${inputSmClass}`}
               />
               <select
                 value={r.severity}
                 onChange={(e) => updateRule(idx, { severity: e.target.value as ComplianceRule['severity'] })}
-                className={`col-span-2 ${inputSmClass}`}
+                className={`sm:w-32 bg-white ${inputSmClass}`}
               >
-                <option value="error">Erreur (Bloquante)</option>
+                <option value="error">Erreur</option>
                 <option value="warning">Avertissement</option>
                 <option value="info">Info</option>
               </select>
@@ -556,14 +559,15 @@ function TemplateEditor({
                 value={r.expression}
                 onChange={(e) => updateRule(idx, { expression: e.target.value })}
                 placeholder="ex: montant > 0"
-                className={`col-span-2 ${inputSmClass} font-mono`}
+                className={`sm:w-36 ${inputSmClass} font-mono`}
               />
               <button
                 type="button"
                 onClick={() => removeRule(idx)}
-                className="col-span-1 text-slate-400 hover:text-red-500 pt-1 transition-colors text-right"
+                className="p-1 text-slate-400 hover:text-red-500 self-end sm:self-center transition-colors"
+                title="Supprimer la règle"
               >
-                <X size={16} />
+                <Trash2 size={16} />
               </button>
             </div>
           ))}
